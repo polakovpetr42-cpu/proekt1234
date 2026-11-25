@@ -7,8 +7,9 @@ import javax.swing.*; // окно и панель с таймером
 
 public class menu extends JFrame { // класс окно
     public BufferedImage fon; //перемннная фона
-    public BufferedImage hero;// переменная героя
-
+    public BufferedImage hero;// переменная героя\
+    public BufferedImage ball; //переменная шара
+    Timer t;
     int heroX = 100;// герой по горизонтали
     int heroY = 930;//  по вертикали(Oy направлена вниз)
     int jumpLeft = 0;// сколько лететь вверх
@@ -19,17 +20,22 @@ public class menu extends JFrame { // класс окно
     int p2x = 700,  p2y = 700, p2w = 200, p2h = 20;
     int p3x = 1100, p3y = 550, p3w = 200, p3h = 20;
 
+    // шар в конце уровня, ровно на полу
+    int ballX = 1700, ballY = 940, ballSize = 150;
+
     menu() {
         try {
             fon  = ImageIO.read(menu.class.getResource("/fon.jpg"));
-            hero = ImageIO.read(menu.class.getResource("/hero.png")); //картинки с пк
+            hero = ImageIO.read(menu.class.getResource("/hero.png"));//картинки с пк
+            ball = ImageIO.read(menu.class.getResource("/buttonOut.png"));//картинки с пк
         } catch (Exception e) { //если есть ошибка покажи а не игнорируй
+            System.out.println("Ошибка загрузки: " + e);
         }
 
         JPanel panel = new JPanel() {
             protected void paintComponent(Graphics g) { //создана новая панедь чтобы рисовать
                 super.paintComponent(g); // залитоь платформу цветом ее фона
-                g.drawImage(fon, 0, 0, getWidth(), getHeight(), this); //фон на весь экран
+                g.drawImage(fon, 0, 0, getWidth(), getHeight(), this); //фон на весь экранфф
 
                 g.setColor(Color.GRAY); //закрашивание платформ серым цветом
                 g.fillRect(p1x, p1y, p1w, p1h);
@@ -37,6 +43,7 @@ public class menu extends JFrame { // класс окно
                 g.fillRect(p3x, p3y, p3w, p3h);
 
                 g.drawImage(hero, heroX, heroY + 10, 150, 150, this); // рисуем героя чуть ниже
+                g.drawImage(ball, ballX, ballY, ballSize, ballSize, this); // рисуем шар
             }
         };
         panel.setBackground(new Color(8, 15, 45)); // цвет фона темно синий
@@ -47,7 +54,7 @@ public class menu extends JFrame { // класс окно
         setExtendedState(JFrame.MAXIMIZED_BOTH); //на весь экран
         setVisible(true); // панель видима
 
-        Timer t = new Timer(20, e -> { //каждые 20мс выполняй это
+        t = new Timer(20, e -> { //каждые 20мс выполняй это
             onGround = false; // сбрасываем дабы герой не прыгал с воздуха
 
             if (jumpLeft > 0) {
@@ -65,6 +72,14 @@ public class menu extends JFrame { // класс окно
                 heroY = 930; onGround = true;
             } //если геройц чуть ниже исправляем
 
+            if (heroX + 150 > ballX && heroX < ballX + ballSize
+                    && heroY + 160 > ballY && heroY + 10 < ballY + ballSize) {
+                t.stop();
+                dispose();
+                new lobbi();
+                return;
+            }
+
             panel.repaint(); // перерисовка
         });
         t.start();//запускаем таймер
@@ -72,8 +87,8 @@ public class menu extends JFrame { // класс окно
         panel.addKeyListener(new KeyListener() { //слушает клаву
             public void keyPressed(KeyEvent e) { //реагирует на зажим отпускание и нажатие
                 int k = e.getKeyCode(); //код клавиши
-                if (k == KeyEvent.VK_A || k == KeyEvent.VK_LEFT)  heroX -= 20; //движение
-                if (k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) heroX += 20;
+                if (k == KeyEvent.VK_A || k == KeyEvent.VK_LEFT)  heroX -= 30; //движение
+                if (k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) heroX += 30;
                 if (k == KeyEvent.VK_SPACE && onGround) {
                     jumpLeft = 30;
                     onGround = false;

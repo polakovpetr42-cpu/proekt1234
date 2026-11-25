@@ -16,7 +16,7 @@ public class Main extends JFrame {
             int x = e.getPoint().x;
             int y = e.getPoint().y;
 
-            if (x > 885 && x < 1035 && y > 250 && y < 400) new menu();
+            if (x > 885 && x < 1035 && y > 250 && y < 400) new lobbi();
 
             if (x > 885 && x < 1035 && y > 460 && y < 610) {
             }
